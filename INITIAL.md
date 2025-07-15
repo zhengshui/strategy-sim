@@ -1,15 +1,159 @@
 ## FEATURE:
 
-[Insert your feature here]
+基于AutoGen的策略决策AI系统 - StrategySim AI 智能决策推演平台
+
+### 核心功能模块：
+
+1. **决策沙盘构建器**
+   - 结构化决策输入向导
+   - 智能变量识别与建议
+   - 约束条件与关键变量配置
+
+2. **多角色动态推演引擎**
+   - 激进投资人Agent：挑战盈利模型，追问增长漏洞
+   - 谨慎法务官Agent：识别合规风险，提示法律陷阱
+   - 悲观分析师Agent：模拟黑天鹅事件，压力测试
+   - 客户代言人Agent：模拟用户行为，预测市场接受度
+   - 战略顾问Agent：整合分析结果，提供综合建议
+
+3. **风险-收益动态图谱**
+   - 实时风险评估可视化
+   - 收益预测计算
+   - 概率影响矩阵分析
+
+4. **决策简报生成**
+   - 结构化推演结论报告
+   - 风险预警与行动建议
+   - 支持多种格式导出
+
+### 技术架构设计：
+
+- **多代理协作模式**：使用AutoGen的SelectorGroupChat实现动态角色切换
+- **专业化Agent设计**：每个Agent具有特定的专业背景和思维模式
+- **工具集成**：集成风险计算、数据可视化和报告生成工具
+- **流式交互**：支持实时决策推演过程展示
 
 ## EXAMPLES:
 
-[Provide and explain examples that you have in the `examples/` folder]
+参考 `examples/` 目录中的示例：
+
+- `examples/app_agent.py` - 单个Agent的基础实现模式
+- `examples/app_team.py` - 多Agent协作的团队模式
+- `examples/app_team_user_proxy.py` - 包含用户交互的团队模式
+
+### 核心实现示例：
+
+```python
+# 决策推演团队配置
+decision_team = SelectorGroupChat([
+    investor_agent,     # 激进投资人
+    legal_agent,        # 法务官
+    analyst_agent,      # 分析师
+    customer_agent,     # 客户代言人
+    strategist_agent    # 战略顾问
+], max_turns=10, termination_condition=approval_termination)
+```
+
+### 关键Agent角色设计：
+
+1. **投资人Agent**：
+   - 系统提示：专注财务风险和盈利模型
+   - 工具：财务计算器、市场数据分析
+   - 行为特点：激进质疑、追求高收益
+
+2. **法务官Agent**：
+   - 系统提示：识别合规风险和法律陷阱
+   - 工具：法规数据库、合规检查
+   - 行为特点：谨慎保守、风险规避
+
+3. **分析师Agent**：
+   - 系统提示：悲观预测和压力测试
+   - 工具：蒙特卡洛模拟、风险建模
+   - 行为特点：数据驱动、黑天鹅思维
+
+4. **客户Agent**：
+   - 系统提示：模拟用户行为和市场反应
+   - 工具：市场调研、用户画像
+   - 行为特点：市场敏感、用户视角
+
+5. **战略顾问Agent**：
+   - 系统提示：综合分析和决策建议
+   - 工具：决策树、SWOT分析
+   - 行为特点：平衡考虑、战略思维
 
 ## DOCUMENTATION:
 
-[List out any documentation (web pages, sources for an MCP server like Crawl4AI RAG, etc.) that will need to be referenced during development]
+### 主要技术文档：
+
+1. **AutoGen官方文档**：
+   - https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/index.html
+   - 重点关注：Agents设计、Teams协作、工具集成
+
+2. **Chainlit文档**：
+   - https://docs.chainlit.io/
+   - 用于构建Web界面和用户交互
+
+3. **Pydantic文档**：
+   - https://docs.pydantic.dev/
+   - 数据验证和模型定义
+
+4. **风险分析相关**：
+   - 概率影响矩阵理论
+   - 蒙特卡洛模拟方法
+   - 决策树分析
+
+### 开发参考：
+
+- 使用CLAUDE.md中的代码规范和项目结构
+- 遵循模块化设计原则
+- 实现完整的测试覆盖
 
 ## OTHER CONSIDERATIONS:
 
-[Any other considerations or specific requirements - great place to include gotchas that you see AI coding assistants miss with your projects a lot]
+### 技术实现考虑：
+
+1. **Agent专业化**：
+   - 每个Agent需要具有明确的专业背景和知识库
+   - 使用不同的系统提示来塑造Agent的"人格"
+   - 集成相关的专业工具和数据源
+
+2. **决策推演流程**：
+   - 使用SelectorGroupChat而不是RoundRobinGroupChat，实现更自然的对话流
+   - 设计智能的终止条件，避免无限循环
+   - 支持用户中途干预和调整
+
+3. **数据安全与隐私**：
+   - 支持本地化部署选项
+   - 实现数据加密和访问控制
+   - 符合GDPR和相关法规要求
+
+4. **可扩展性设计**：
+   - 支持动态加载不同行业的专业Agent
+   - 可配置的推演参数和规则
+   - 模块化的工具集成架构
+
+5. **用户体验优化**：
+   - 提供直观的决策输入界面
+   - 实时显示推演过程
+   - 生成可视化的分析报告
+
+### 性能和可靠性：
+
+- 实现Agent响应的超时机制
+- 支持推演过程的保存和恢复
+- 提供推演结果的置信度评估
+- 集成监控和日志系统
+
+### 商业化考虑：
+
+- 设计分层的功能访问权限
+- 支持企业级的定制化需求
+- 提供API接口供第三方集成
+- 实现使用量统计和计费功能
+
+### 测试策略：
+
+- 单元测试：每个Agent的独立功能
+- 集成测试：多Agent协作流程
+- 压力测试：大规模决策推演
+- 用户验收测试：真实业务场景验证
