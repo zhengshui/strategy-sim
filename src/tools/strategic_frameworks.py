@@ -8,7 +8,7 @@ strategic planning frameworks, and synthesis tools.
 from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Any, Union
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 import random
 
 
@@ -64,7 +64,7 @@ class SWOTElement(BaseModel):
     evidence: List[str] = Field(default_factory=list)
     implications: List[str] = Field(default_factory=list)
     
-    @validator('category')
+    @field_validator('category')
     def validate_category(cls, v: str) -> str:
         """Ensure category is valid."""
         if v.lower() not in ['strength', 'weakness', 'opportunity', 'threat']:
@@ -86,7 +86,7 @@ class SWOTAnalysis(BaseModel):
     priority_actions: List[str] = Field(..., description="Priority actions")
     analysis_date: datetime = Field(default_factory=datetime.now)
     
-    @validator('analysis_id')
+    @field_validator('analysis_id')
     def validate_analysis_id(cls, v: str) -> str:
         """Ensure analysis ID is meaningful."""
         if not v.strip():
@@ -131,14 +131,14 @@ class PorterFiveForces(BaseModel):
     competitive_implications: List[str] = Field(..., description="Competitive implications")
     analysis_date: datetime = Field(default_factory=datetime.now)
     
-    @validator('analysis_id')
+    @field_validator('analysis_id')
     def validate_analysis_id(cls, v: str) -> str:
         """Ensure analysis ID is meaningful."""
         if not v.strip():
             raise ValueError("Analysis ID cannot be empty")
         return v.strip()
     
-    @validator('forces')
+    @field_validator('forces')
     def validate_forces(cls, v: List[PorterForceAnalysis]) -> List[PorterForceAnalysis]:
         """Ensure all five forces are covered."""
         force_types = {force.force for force in v}
@@ -160,7 +160,7 @@ class DecisionNode(BaseModel):
     children: List['DecisionNode'] = Field(default_factory=list)
     parent_id: Optional[str] = Field(None, description="Parent node ID")
     
-    @validator('node_id')
+    @field_validator('node_id')
     def validate_node_id(cls, v: str) -> str:
         """Ensure node ID is meaningful."""
         if not v.strip():
@@ -181,7 +181,7 @@ class DecisionTree(BaseModel):
     assumptions: List[str] = Field(..., description="Key assumptions")
     analysis_date: datetime = Field(default_factory=datetime.now)
     
-    @validator('tree_id')
+    @field_validator('tree_id')
     def validate_tree_id(cls, v: str) -> str:
         """Ensure tree ID is meaningful."""
         if not v.strip():
@@ -203,7 +203,7 @@ class StrategicOption(BaseModel):
     resource_requirements: Dict[str, Any] = Field(default_factory=dict)
     implementation_timeline: str = Field(..., description="Implementation timeline")
     
-    @validator('option_name')
+    @field_validator('option_name')
     def validate_option_name(cls, v: str) -> str:
         """Ensure option name is meaningful."""
         if not v.strip():
@@ -225,7 +225,7 @@ class StrategicEvaluation(BaseModel):
     success_metrics: List[str] = Field(..., description="Success metrics")
     evaluation_date: datetime = Field(default_factory=datetime.now)
     
-    @validator('evaluation_id')
+    @field_validator('evaluation_id')
     def validate_evaluation_id(cls, v: str) -> str:
         """Ensure evaluation ID is meaningful."""
         if not v.strip():
@@ -249,7 +249,7 @@ class StrategicSynthesis(BaseModel):
     confidence_level: float = Field(..., ge=0.0, le=1.0, description="Confidence in recommendations")
     synthesis_date: datetime = Field(default_factory=datetime.now)
     
-    @validator('synthesis_id')
+    @field_validator('synthesis_id')
     def validate_synthesis_id(cls, v: str) -> str:
         """Ensure synthesis ID is meaningful."""
         if not v.strip():
@@ -343,6 +343,10 @@ PORTER_FACTORS = {
         "Capacity utilization"
     ]
 }
+
+
+# Alias for backward compatibility
+conduct_swot_analysis = lambda *args, **kwargs: perform_swot_analysis(*args, **kwargs)
 
 
 async def perform_swot_analysis(

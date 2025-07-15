@@ -13,7 +13,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 from .agent_models import AgentAnalysis, AgentRole, RiskLevel
 from .decision_models import DecisionInput, DecisionType
@@ -76,7 +76,7 @@ class RiskAssessment(BaseModel):
     responsible_party: Optional[str] = Field(None)
     timeline: Optional[str] = Field(None)
     
-    @validator('risk_score')
+    @field_validator('risk_score')
     def validate_risk_score(cls, v: float, values: Dict[str, Any]) -> float:
         """Validate risk score calculation."""
         probability = values.get('probability', 0.0)
@@ -106,7 +106,7 @@ class ActionItem(BaseModel):
     resources_required: List[str] = Field(default_factory=list)
     expected_outcome: Optional[str] = Field(None)
     
-    @validator('title')
+    @field_validator('title')
     def validate_title(cls, v: str) -> str:
         """Ensure title is meaningful."""
         if len(v.strip()) < 5:
@@ -129,7 +129,7 @@ class OptionEvaluation(BaseModel):
     success_probability: float = Field(..., ge=0.0, le=1.0)
     agent_votes: Dict[str, float] = Field(default_factory=dict)
     
-    @validator('option_name')
+    @field_validator('option_name')
     def validate_option_name(cls, v: str) -> str:
         """Ensure option name is meaningful."""
         if len(v.strip()) < 1:
@@ -154,7 +154,7 @@ class ConsensusAnalysis(BaseModel):
     agent_alignment: Dict[str, Dict[str, float]] = Field(default_factory=dict)
     confidence_distribution: Dict[str, float] = Field(default_factory=dict)
     
-    @validator('consensus_level')
+    @field_validator('consensus_level')
     def validate_consensus_level(cls, v: float) -> float:
         """Ensure consensus level is valid."""
         if not (0.0 <= v <= 1.0):
@@ -188,7 +188,7 @@ class ExecutiveSummary(BaseModel):
     decision_urgency: str = Field(..., description="Urgency level")
     estimated_impact: str = Field(..., description="Expected impact description")
     
-    @validator('key_findings')
+    @field_validator('key_findings')
     def validate_key_findings(cls, v: List[str]) -> List[str]:
         """Ensure key findings are meaningful."""
         if not v:
@@ -259,21 +259,21 @@ class DecisionReport(BaseModel):
     reviewed_at: Optional[datetime] = Field(None)
     approved_at: Optional[datetime] = Field(None)
     
-    @validator('report_id')
+    @field_validator('report_id')
     def validate_report_id(cls, v: str) -> str:
         """Ensure report ID is meaningful."""
         if len(v.strip()) < 1:
             raise ValueError("Report ID cannot be empty")
         return v.strip()
     
-    @validator('participants')
+    @field_validator('participants')
     def validate_participants(cls, v: List[str]) -> List[str]:
         """Ensure participants are unique."""
         if len(set(v)) != len(v):
             raise ValueError("Participants must be unique")
         return v
     
-    @validator('confidence_interval')
+    @field_validator('confidence_interval')
     def validate_confidence_interval(cls, v: Tuple[float, float]) -> Tuple[float, float]:
         """Ensure confidence interval is valid."""
         lower, upper = v
@@ -327,7 +327,7 @@ class ReportTemplate(BaseModel):
     format_options: List[str] = Field(default_factory=list)
     custom_fields: Dict[str, Any] = Field(default_factory=dict)
     
-    @validator('template_name')
+    @field_validator('template_name')
     def validate_template_name(cls, v: str) -> str:
         """Ensure template name is meaningful."""
         if len(v.strip()) < 1:

@@ -13,7 +13,26 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
+
+
+class AgentConfiguration(BaseModel):
+    """Configuration settings for an agent."""
+    
+    name: str = Field(..., description="Agent name")
+    role: str = Field(..., description="Agent role")
+    personality: str = Field(default="balanced", description="Agent personality")
+    temperature: float = Field(default=0.7, ge=0.0, le=2.0, description="Temperature setting for responses")
+    max_tokens: int = Field(default=1000, ge=100, le=4000, description="Maximum tokens for responses")
+    tools_enabled: bool = Field(default=True, description="Whether tools are enabled")
+    custom_instructions: Optional[str] = Field(None, description="Custom instructions for the agent")
+    
+    @field_validator('name')
+    def validate_name(cls, v: str) -> str:
+        """Ensure name is not empty."""
+        if not v.strip():
+            raise ValueError("Agent name cannot be empty")
+        return v.strip()
 
 
 class AgentRole(str, Enum):
@@ -68,7 +87,7 @@ class ToolResult(BaseModel):
     execution_time: float = Field(..., description="Execution time in seconds")
     metadata: Dict[str, Any] = Field(default_factory=dict)
     
-    @validator('execution_time')
+    @field_validator('execution_time')
     def validate_execution_time(cls, v: float) -> float:
         """Ensure execution time is non-negative."""
         if v < 0:
@@ -98,7 +117,7 @@ class AgentRecommendation(BaseModel):
     expected_impact: str = Field(..., description="Expected impact description")
     dependencies: List[str] = Field(default_factory=list)
     
-    @validator('priority')
+    @field_validator('priority')
     def validate_priority(cls, v: str) -> str:
         """Ensure priority is valid."""
         if v.lower() not in ['high', 'medium', 'low']:
@@ -116,7 +135,7 @@ class AgentConcern(BaseModel):
     mitigation_strategies: List[str] = Field(default_factory=list)
     category: str = Field(..., description="Category of concern (financial, legal, operational, etc.)")
     
-    @validator('category')
+    @field_validator('category')
     def validate_category(cls, v: str) -> str:
         """Ensure category is meaningful."""
         if len(v.strip()) < 1:
@@ -139,7 +158,7 @@ class AgentAnalysis(BaseModel):
     tool_results: List[ToolResult] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.now)
     
-    @validator('agent_name')
+    @field_validator('agent_name')
     def validate_agent_name(cls, v: str) -> str:
         """Ensure agent name is meaningful."""
         if len(v.strip()) < 1:
@@ -161,7 +180,7 @@ class AgentResponse(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
     timestamp: datetime = Field(default_factory=datetime.now)
     
-    @validator('response_type')
+    @field_validator('response_type')
     def validate_response_type(cls, v: str) -> str:
         """Ensure response type is valid."""
         valid_types = ['analysis', 'question', 'recommendation', 'concern', 'summary', 'clarification']
@@ -196,19 +215,18 @@ class AgentConversation(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
     
-    @validator('participants')
+    @field_validator('participants')
     def validate_participants(cls, v: List[str]) -> List[str]:
         """Ensure participants are unique."""
         if len(set(v)) != len(v):
             raise ValueError("Participants must be unique")
         return v
     
-    @validator('turn_count')
-    def validate_turn_count(cls, v: int, values: Dict[str, Any]) -> int:
-        """Ensure turn count doesn't exceed max turns."""
-        max_turns = values.get('max_turns', 20)
-        if v > max_turns:
-            raise ValueError(f"Turn count cannot exceed max turns ({max_turns})")
+    @field_validator('turn_count')
+    def validate_turn_count(cls, v: int) -> int:
+        """Ensure turn count is non-negative."""
+        if v < 0:
+            raise ValueError("Turn count cannot be negative")
         return v
     
     def add_message(self, message: AgentResponse) -> None:

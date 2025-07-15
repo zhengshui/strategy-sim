@@ -8,7 +8,7 @@ scenario planning, and quantitative risk assessment.
 import random
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple, Any, Callable
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 import numpy as np
 from enum import Enum
 
@@ -57,7 +57,7 @@ class RiskVariable(BaseModel):
     unit: Optional[str] = Field(None, description="Unit of measurement")
     correlation_matrix: Optional[Dict[str, float]] = Field(None, description="Correlations with other variables")
     
-    @validator('parameters')
+    @field_validator('parameters')
     def validate_parameters(cls, v: Dict[str, float], values: Dict[str, Any]) -> Dict[str, float]:
         """Validate distribution parameters."""
         distribution = values.get('distribution')
@@ -88,7 +88,7 @@ class MonteCarloResult(BaseModel):
     probability_negative: float = Field(..., description="Probability of negative outcomes")
     confidence_intervals: Dict[str, Tuple[float, float]] = Field(..., description="Confidence intervals")
     
-    @validator('iterations')
+    @field_validator('iterations')
     def validate_iterations(cls, v: int) -> int:
         """Ensure sufficient iterations."""
         if v < 1000:
@@ -108,7 +108,7 @@ class ScenarioAnalysis(BaseModel):
     risk_factors: List[str] = Field(..., description="Key risk factors")
     mitigation_strategies: List[str] = Field(default_factory=list)
     
-    @validator('scenario_name')
+    @field_validator('scenario_name')
     def validate_scenario_name(cls, v: str) -> str:
         """Ensure scenario name is meaningful."""
         if not v.strip():
@@ -126,7 +126,7 @@ class RiskMetric(BaseModel):
     assumptions: List[str] = Field(..., description="Key assumptions")
     limitations: List[str] = Field(default_factory=list)
     
-    @validator('metric_name')
+    @field_validator('metric_name')
     def validate_metric_name(cls, v: str) -> str:
         """Ensure metric name is meaningful."""
         if not v.strip():
@@ -166,7 +166,7 @@ class RiskAssessment(BaseModel):
     recommendations: List[str] = Field(..., description="Risk management recommendations")
     assessment_date: datetime = Field(default_factory=datetime.now)
     
-    @validator('assessment_id')
+    @field_validator('assessment_id')
     def validate_assessment_id(cls, v: str) -> str:
         """Ensure assessment ID is meaningful."""
         if not v.strip():

@@ -7,7 +7,7 @@ cash flow analysis, and sensitivity analysis.
 
 import math
 from typing import Dict, List, Optional, Tuple, Any
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 import numpy as np
 
 
@@ -23,7 +23,7 @@ class CashFlowAnalysis(BaseModel):
     discounted_payback: Optional[float] = Field(None, description="Discounted payback period")
     profitability_index: float = Field(..., description="Profitability index")
     
-    @validator('cash_flows')
+    @field_validator('cash_flows')
     def validate_cash_flows(cls, v: List[float]) -> List[float]:
         """Ensure cash flows are provided."""
         if not v:
@@ -40,11 +40,11 @@ class SensitivityAnalysis(BaseModel):
     npv_impacts: List[float] = Field(..., description="NPV impacts for each value")
     elasticity: float = Field(..., description="Elasticity of NPV to variable change")
     
-    @validator('sensitivity_range')
-    def validate_range(cls, v: List[float], values: Dict[str, Any]) -> List[float]:
+    @field_validator('sensitivity_range')
+    def validate_range(cls, v: List[float]) -> List[float]:
         """Ensure sensitivity range is valid."""
-        if len(v) != len(values.get('npv_impacts', [])):
-            raise ValueError("Sensitivity range and NPV impacts must have same length")
+        if not v:
+            raise ValueError("Sensitivity range cannot be empty")
         return v
 
 
@@ -61,7 +61,7 @@ class FinancialRatios(BaseModel):
     debt_to_equity: Optional[float] = Field(None, description="Debt to Equity ratio")
     current_ratio: Optional[float] = Field(None, description="Current ratio")
     
-    @validator('gross_margin', 'operating_margin', 'net_margin')
+    @field_validator('gross_margin', 'operating_margin', 'net_margin')
     def validate_margins(cls, v: float) -> float:
         """Ensure margins are reasonable."""
         if v < -100 or v > 100:
@@ -80,7 +80,7 @@ class InvestmentMetrics(BaseModel):
     max_drawdown: float = Field(..., description="Maximum drawdown")
     var_95: float = Field(..., description="95% Value at Risk")
     
-    @validator('initial_investment')
+    @field_validator('initial_investment')
     def validate_investment(cls, v: float) -> float:
         """Ensure investment is positive."""
         if v <= 0:
@@ -203,6 +203,57 @@ async def calculate_discounted_payback(cash_flows: List[float], discount_rate: f
             return float(i)
     
     return None
+
+
+async def calculate_roi(
+    initial_investment: float, 
+    final_value: float, 
+    years: Optional[int] = None
+) -> float:
+    """
+    Calculate Return on Investment (ROI).
+    
+    Args:
+        initial_investment: Initial investment amount
+        final_value: Final value of investment
+        years: Number of years for annualized ROI calculation
+    
+    Returns:
+        ROI as decimal (e.g., 0.15 for 15%)
+    """
+    if initial_investment <= 0:
+        raise ValueError("Initial investment must be positive")
+    
+    roi = (final_value - initial_investment) / initial_investment
+    
+    if years and years > 0:
+        # Annualized ROI
+        roi = (final_value / initial_investment) ** (1 / years) - 1
+    
+    return roi
+
+
+async def calculate_break_even_point(
+    fixed_costs: float,
+    variable_cost_per_unit: float,
+    price_per_unit: float
+) -> float:
+    """
+    Calculate break-even point in units.
+    
+    Args:
+        fixed_costs: Fixed costs
+        variable_cost_per_unit: Variable cost per unit
+        price_per_unit: Price per unit
+    
+    Returns:
+        Break-even point in units
+    """
+    if price_per_unit <= variable_cost_per_unit:
+        raise ValueError("Price per unit must be greater than variable cost per unit")
+    
+    contribution_margin = price_per_unit - variable_cost_per_unit
+    return fixed_costs / contribution_margin
 
 
 async def calculate_profitability_index(cash_flows: List[float], discount_rate: float) -> float:
@@ -454,3 +505,40 @@ async def break_even_analysis(
         "contribution_margin_ratio": contribution_margin / price_per_unit,
         "operating_leverage": contribution_margin / (contribution_margin - fixed_costs) if contribution_margin > fixed_costs else float('inf')
     }
+
+
+# Aliases for backward compatibility
+analyze_cash_flow = perform_cash_flow_analysis
+
+
+async def calculate_wacc(
+    cost_of_equity: float,
+    cost_of_debt: float,
+    tax_rate: float,
+    equity_weight: float,
+    debt_weight: float
+) -> float:
+    """
+    Calculate Weighted Average Cost of Capital (WACC).
+    
+    Args:
+        cost_of_equity: Cost of equity as decimal
+        cost_of_debt: Cost of debt as decimal
+        tax_rate: Tax rate as decimal
+        equity_weight: Equity weight (0-1)
+        debt_weight: Debt weight (0-1)
+    
+    Returns:
+        WACC as decimal
+    """
+    if abs(equity_weight + debt_weight - 1.0) > 0.01:
+        raise ValueError("Equity and debt weights must sum to 1.0")
+    
+    after_tax_cost_of_debt = cost_of_debt * (1 - tax_rate)
+    wacc = (equity_weight * cost_of_equity) + (debt_weight * after_tax_cost_of_debt)
+    
+    return wacc
+
+
+# Alias for backward compatibility
+perform_sensitivity_analysis = sensitivity_analysis

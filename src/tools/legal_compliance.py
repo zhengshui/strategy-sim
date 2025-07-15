@@ -8,7 +8,7 @@ and contract analysis.
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Any
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class RiskSeverity(str, Enum):
@@ -44,7 +44,7 @@ class LegalRisk(BaseModel):
     timeline: Optional[str] = Field(None, description="Risk timeline")
     responsible_party: Optional[str] = Field(None)
     
-    @validator('risk_id')
+    @field_validator('risk_id')
     def validate_risk_id(cls, v: str) -> str:
         """Ensure risk ID is meaningful."""
         if not v.strip():
@@ -66,7 +66,7 @@ class ComplianceRequirement(BaseModel):
     estimated_cost: Optional[float] = Field(None)
     responsible_party: Optional[str] = Field(None)
     
-    @validator('requirement_id')
+    @field_validator('requirement_id')
     def validate_requirement_id(cls, v: str) -> str:
         """Ensure requirement ID is meaningful."""
         if not v.strip():
@@ -85,7 +85,7 @@ class ContractRisk(BaseModel):
     alternative_approaches: List[str] = Field(default_factory=list)
     negotiation_points: List[str] = Field(default_factory=list)
     
-    @validator('contract_type')
+    @field_validator('contract_type')
     def validate_contract_type(cls, v: str) -> str:
         """Ensure contract type is meaningful."""
         if not v.strip():
@@ -107,7 +107,7 @@ class LegalAssessment(BaseModel):
     estimated_total_cost: Optional[float] = Field(None)
     assessment_date: datetime = Field(default_factory=datetime.now)
     
-    @validator('assessment_id')
+    @field_validator('assessment_id')
     def validate_assessment_id(cls, v: str) -> str:
         """Ensure assessment ID is meaningful."""
         if not v.strip():

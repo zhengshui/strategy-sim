@@ -12,7 +12,25 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
+
+
+class ValidationResult(BaseModel):
+    """Result of decision input validation."""
+    
+    is_valid: bool = Field(..., description="Whether the input is valid")
+    errors: List[str] = Field(default_factory=list, description="List of validation errors")
+    warnings: List[str] = Field(default_factory=list, description="List of validation warnings")
+    
+    @property
+    def has_errors(self) -> bool:
+        """Check if there are any errors."""
+        return len(self.errors) > 0
+    
+    @property
+    def has_warnings(self) -> bool:
+        """Check if there are any warnings."""
+        return len(self.warnings) > 0
 
 
 class DecisionType(str, Enum):
@@ -46,7 +64,7 @@ class DecisionOption(BaseModel):
     estimated_timeline: Optional[str] = None
     confidence_level: Optional[float] = Field(None, ge=0.0, le=1.0)
     
-    @validator('name')
+    @field_validator('name')
     def validate_name(cls, v: str) -> str:
         """Ensure option name is meaningful."""
         if len(v.strip()) < 1:
@@ -80,7 +98,7 @@ class DecisionInput(BaseModel):
     additional_context: Dict[str, Any] = Field(default_factory=dict)
     created_at: datetime = Field(default_factory=datetime.now)
     
-    @validator('options')
+    @field_validator('options')
     def validate_options(cls, v: List[DecisionOption]) -> List[DecisionOption]:
         """Ensure options are unique and meaningful."""
         names = [option.name for option in v]
@@ -88,14 +106,14 @@ class DecisionInput(BaseModel):
             raise ValueError("Option names must be unique")
         return v
     
-    @validator('title')
+    @field_validator('title')
     def validate_title(cls, v: str) -> str:
         """Ensure title is meaningful."""
         if len(v.strip()) < 5:
             raise ValueError("Title must be at least 5 characters")
         return v.strip()
     
-    @validator('timeline')
+    @field_validator('timeline')
     def validate_timeline(cls, v: str) -> str:
         """Ensure timeline is provided."""
         if not v.strip():

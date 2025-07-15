@@ -6,7 +6,7 @@ Uses pydantic-settings for environment variable management and validation.
 
 import os
 from typing import Optional, Literal
-from pydantic import Field, validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -77,21 +77,21 @@ class Settings(BaseSettings):
         default=0.7, description="Risk threshold for decision analysis"
     )
 
-    @validator("openai_api_key")
+    @field_validator("openai_api_key")
     def validate_openai_key(cls, v: str) -> str:
         """Validate OpenAI API key format."""
         if not v.startswith("sk-"):
             raise ValueError("OpenAI API key must start with 'sk-'")
         return v
 
-    @validator("chainlit_port")
+    @field_validator("chainlit_port")
     def validate_port(cls, v: int) -> int:
         """Validate port number range."""
         if not (1024 <= v <= 65535):
             raise ValueError("Port must be between 1024 and 65535")
         return v
 
-    @validator("risk_threshold")
+    @field_validator("risk_threshold")
     def validate_risk_threshold(cls, v: float) -> float:
         """Validate risk threshold range."""
         if not (0.0 <= v <= 1.0):

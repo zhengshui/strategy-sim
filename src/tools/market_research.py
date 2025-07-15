@@ -8,7 +8,7 @@ competitive analysis, and user experience evaluation.
 from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Any
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 import numpy as np
 import random
 
@@ -70,7 +70,7 @@ class CustomerProfile(BaseModel):
     brand_loyalty: float = Field(..., ge=0.0, le=1.0, description="Brand loyalty score")
     adoption_likelihood: float = Field(..., ge=0.0, le=1.0, description="Adoption likelihood")
     
-    @validator('size')
+    @field_validator('size')
     def validate_size(cls, v: int) -> int:
         """Ensure segment size is positive."""
         if v <= 0:
@@ -91,7 +91,7 @@ class MarketAnalysis(BaseModel):
     market_segments: List[CustomerProfile] = Field(..., description="Customer segments")
     competitive_intensity: float = Field(..., ge=0.0, le=1.0, description="Competitive intensity")
     
-    @validator('market_name')
+    @field_validator('market_name')
     def validate_market_name(cls, v: str) -> str:
         """Ensure market name is meaningful."""
         if not v.strip():
@@ -114,7 +114,7 @@ class CompetitorAnalysis(BaseModel):
     financial_performance: Dict[str, float] = Field(default_factory=dict)
     strategic_focus: str = Field(..., description="Strategic focus")
     
-    @validator('competitor_name')
+    @field_validator('competitor_name')
     def validate_competitor_name(cls, v: str) -> str:
         """Ensure competitor name is meaningful."""
         if not v.strip():
@@ -134,7 +134,7 @@ class CustomerJourney(BaseModel):
     success_metrics: List[str] = Field(..., description="Success metrics")
     conversion_rate: float = Field(..., ge=0.0, le=1.0, description="Conversion rate to next stage")
     
-    @validator('touchpoints')
+    @field_validator('touchpoints')
     def validate_touchpoints(cls, v: List[str]) -> List[str]:
         """Ensure touchpoints are provided."""
         if not v:
@@ -155,7 +155,7 @@ class CustomerFeedback(BaseModel):
     complaints: List[str] = Field(default_factory=list)
     suggestions: List[str] = Field(default_factory=list)
     
-    @validator('feedback_source')
+    @field_validator('feedback_source')
     def validate_feedback_source(cls, v: str) -> str:
         """Ensure feedback source is meaningful."""
         if not v.strip():
@@ -179,7 +179,7 @@ class MarketResearchReport(BaseModel):
     methodology: str = Field(..., description="Research methodology")
     research_date: datetime = Field(default_factory=datetime.now)
     
-    @validator('report_id')
+    @field_validator('report_id')
     def validate_report_id(cls, v: str) -> str:
         """Ensure report ID is meaningful."""
         if not v.strip():
@@ -645,6 +645,10 @@ async def analyze_customer_feedback(
         feedback_analyses.append(feedback)
     
     return feedback_analyses
+
+
+# Alias for backward compatibility
+analyze_customer_behavior = analyze_customer_feedback
 
 
 async def perform_comprehensive_market_research(
