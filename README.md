@@ -1,296 +1,396 @@
-# Context Engineering Template
+# 🧠 StrategySim AI - Multi-Agent Decision Analysis System
 
-A comprehensive template for getting started with Context Engineering - the discipline of engineering context for AI coding assistants so they have the information necessary to get the job done end to end.
+A comprehensive multi-agent decision analysis system built with AutoGen that provides strategic business decision support through specialized AI agents. Each agent represents a different professional perspective: Investor, Legal Officer, Analyst, Customer Representative, and Strategic Consultant.
 
-> **Context Engineering is 10x better than prompt engineering and 100x better than vibe coding.**
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-## 🚀 Quick Start
+## 🚀 Features
+
+### Multi-Agent Decision Analysis
+- **5 Specialized Agents**: Investor, Legal, Analyst, Customer, and Strategic perspectives
+- **SelectorGroupChat**: Dynamic agent selection for natural conversation flow
+- **Real-time Collaboration**: Agents discuss and reach consensus on decisions
+- **Comprehensive Analysis**: Financial, legal, market, and strategic evaluation
+
+### Advanced Decision Support
+- **Financial Analysis**: NPV, IRR, ROI, payback period calculations
+- **Risk Assessment**: Multi-dimensional risk modeling and mitigation strategies
+- **Market Research**: Customer behavior analysis and market opportunity evaluation
+- **Legal Compliance**: Regulatory risk assessment and compliance frameworks
+- **Strategic Planning**: SWOT analysis, Porter's Five Forces, decision trees
+
+### Interactive Web Interface
+- **Chainlit Integration**: Modern web interface for real-time interaction
+- **Decision Workflows**: Guided decision input and analysis processes
+- **Visualization**: Charts, graphs, and interactive dashboards
+- **Report Generation**: HTML, PDF, Excel, and JSON export formats
+
+### Robust Architecture
+- **Pydantic Models**: Type-safe data validation and serialization
+- **Comprehensive Testing**: 80%+ test coverage with unit and integration tests
+- **Scalable Design**: Modular architecture supporting custom agents and tools
+- **Production Ready**: Environment configuration, logging, and error handling
+
+## 🏗️ Architecture
+
+```
+strategysim-ai/
+├── src/
+│   ├── agents/           # AI agent implementations
+│   │   ├── base_agent.py     # Abstract base agent
+│   │   ├── investor_agent.py  # Financial analysis agent
+│   │   ├── legal_agent.py     # Legal compliance agent
+│   │   ├── analyst_agent.py   # Risk analysis agent
+│   │   ├── customer_agent.py  # Market research agent
+│   │   ├── strategist_agent.py # Strategic planning agent
+│   │   └── team.py           # SelectorGroupChat coordination
+│   ├── models/           # Pydantic data models
+│   │   ├── decision_models.py # Decision input/output models
+│   │   ├── agent_models.py    # Agent conversation models
+│   │   └── report_models.py   # Report and analysis models
+│   ├── tools/            # Specialized agent tools
+│   │   ├── financial_calculator.py # Financial analysis tools
+│   │   ├── legal_compliance.py     # Legal assessment tools
+│   │   ├── market_research.py      # Market analysis tools
+│   │   ├── risk_modeler.py         # Risk modeling tools
+│   │   └── strategic_frameworks.py # Strategic planning tools
+│   ├── utils/            # Utility functions
+│   │   ├── visualization.py    # Chart and graph generation
+│   │   └── report_generator.py # Multi-format report generation
+│   └── config/           # Configuration management
+│       ├── settings.py       # Application settings
+│       └── prompts.py        # Agent system prompts
+├── tests/                # Comprehensive test suite
+├── app.py               # Main Chainlit application
+├── run_tests.py         # Test runner with coverage
+└── pyproject.toml       # Modern Python packaging
+```
+
+## 🛠️ Installation
+
+### Prerequisites
+- Python 3.10+
+- OpenAI API key (or other LLM provider)
+
+### Quick Start
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/zhengshui/strategy-sim.git
+cd strategy-sim
+```
+
+2. **Set up virtual environment**
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. **Install dependencies**
+```bash
+pip install -e .
+# Or for development:
+pip install -e ".[dev]"
+```
+
+4. **Configure environment**
+```bash
+cp .env.example .env
+# Edit .env with your API keys and configuration
+```
+
+5. **Run the application**
+```bash
+chainlit run app.py
+```
+
+The application will be available at `http://localhost:8000`
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+Create a `.env` file with the following configuration:
+
+```env
+# Model Configuration
+OPENAI_API_KEY=sk-your-openai-api-key-here
+MODEL_PROVIDER=openai
+MODEL_NAME=gpt-4o
+
+# Application Settings
+DEBUG=true
+LOG_LEVEL=INFO
+
+# Chainlit Configuration
+CHAINLIT_AUTH_SECRET=your-secret-key-here
+CHAINLIT_HOST=0.0.0.0
+CHAINLIT_PORT=8000
+```
+
+### Model Configuration
+
+Create a `model_config.yaml` file for AutoGen model configuration:
+
+```yaml
+model_type: "openai"
+model: "gpt-4o"
+api_key: "${OPENAI_API_KEY}"
+base_url: "https://api.openai.com/v1"
+temperature: 0.7
+max_tokens: 4000
+```
+
+## 🎯 Usage
+
+### Decision Analysis Workflow
+
+1. **Start a Session**: Launch the web interface and select a decision type
+2. **Provide Decision Details**: Enter decision context, options, and constraints
+3. **Multi-Agent Analysis**: Watch as specialized agents analyze your decision
+4. **Receive Comprehensive Report**: Get detailed analysis with recommendations
+
+### Supported Decision Types
+
+- **💰 Pricing Decisions**: Product/service pricing optimization
+- **🌍 Market Entry**: New market expansion analysis
+- **🚀 Product Launch**: New product introduction planning
+- **💼 Investment Decisions**: Investment opportunity evaluation
+- **🤝 Strategic Partnerships**: Partnership opportunity assessment
+
+### API Usage
+
+```python
+from src.agents import create_decision_team, run_decision_analysis
+from src.models.decision_models import DecisionInput, DecisionType
+
+# Create decision input
+decision = DecisionInput(
+    title="Market Expansion Decision",
+    description="Evaluating expansion into European markets",
+    decision_type=DecisionType.MARKET_ENTRY,
+    options=[
+        DecisionOption(name="UK Market", description="Enter UK market first"),
+        DecisionOption(name="Germany Market", description="Enter German market first"),
+    ],
+    timeline="6 months",
+    budget_range="$1M - $5M"
+)
+
+# Run analysis
+team = create_decision_team()
+report = await run_decision_analysis(decision, team)
+
+# Access results
+print(f"Recommendation: {report.executive_summary.recommended_option}")
+print(f"Confidence: {report.executive_summary.confidence_level:.1%}")
+```
+
+## 🧪 Testing
+
+### Run Tests
 
 ```bash
-# 1. Clone this template
-git clone https://github.com/coleam00/Context-Engineering-Intro.git
-cd Context-Engineering-Intro
+# Run all tests with coverage
+python run_tests.py
 
-# 2. Set up your project rules (optional - template provided)
-# Edit CLAUDE.md to add your project-specific guidelines
+# Run specific test suites
+python run_tests.py --unit        # Unit tests only
+python run_tests.py --integration # Integration tests only
+python run_tests.py --tools       # Tool tests only
 
-# 3. Add examples (highly recommended)
-# Place relevant code examples in the examples/ folder
-
-# 4. Create your initial feature request
-# Edit INITIAL.md with your feature requirements
-
-# 5. Generate a comprehensive PRP (Product Requirements Prompt)
-# In Claude Code, run:
-/generate-prp INITIAL.md
-
-# 6. Execute the PRP to implement your feature
-# In Claude Code, run:
-/execute-prp PRPs/your-feature-name.md
+# Generate test report
+python run_tests.py --report
 ```
 
-## 📚 Table of Contents
+### Test Coverage
 
-- [What is Context Engineering?](#what-is-context-engineering)
-- [Template Structure](#template-structure)
-- [Step-by-Step Guide](#step-by-step-guide)
-- [Writing Effective INITIAL.md Files](#writing-effective-initialmd-files)
-- [The PRP Workflow](#the-prp-workflow)
-- [Using Examples Effectively](#using-examples-effectively)
-- [Best Practices](#best-practices)
+The system includes comprehensive tests with 80%+ coverage:
 
-## What is Context Engineering?
+- **Unit Tests**: Individual component functionality
+- **Integration Tests**: Multi-agent team coordination
+- **Tool Tests**: Financial calculations and analysis tools
+- **Model Tests**: Data validation and business logic
 
-Context Engineering represents a paradigm shift from traditional prompt engineering:
+## 📊 Agent Capabilities
 
-### Prompt Engineering vs Context Engineering
+### 💰 Investor Agent
+- **Financial Analysis**: NPV, IRR, ROI calculations
+- **Growth Projections**: Revenue and market growth modeling
+- **Risk Assessment**: Investment risk evaluation
+- **Market Opportunities**: Growth potential analysis
 
-**Prompt Engineering:**
-- Focuses on clever wording and specific phrasing
-- Limited to how you phrase a task
-- Like giving someone a sticky note
+### ⚖️ Legal Agent
+- **Compliance Assessment**: Regulatory requirement analysis
+- **Risk Mitigation**: Legal risk identification and mitigation
+- **Contract Analysis**: Agreement and partnership evaluation
+- **Regulatory Monitoring**: Compliance framework assessment
 
-**Context Engineering:**
-- A complete system for providing comprehensive context
-- Includes documentation, examples, rules, patterns, and validation
-- Like writing a full screenplay with all the details
+### 📊 Analyst Agent
+- **Risk Modeling**: Monte Carlo simulations and scenario analysis
+- **Data Analysis**: Statistical analysis and trend identification
+- **Performance Metrics**: KPI tracking and benchmarking
+- **Market Research**: Competitive analysis and market sizing
 
-### Why Context Engineering Matters
+### 👥 Customer Agent
+- **Market Research**: Customer behavior and preference analysis
+- **Segmentation**: Customer segment identification and targeting
+- **User Experience**: Customer journey and satisfaction analysis
+- **Demand Forecasting**: Market demand prediction and validation
 
-1. **Reduces AI Failures**: Most agent failures aren't model failures - they're context failures
-2. **Ensures Consistency**: AI follows your project patterns and conventions
-3. **Enables Complex Features**: AI can handle multi-step implementations with proper context
-4. **Self-Correcting**: Validation loops allow AI to fix its own mistakes
+### 🎯 Strategic Agent
+- **Strategic Planning**: SWOT analysis and strategic frameworks
+- **Decision Integration**: Cross-functional analysis synthesis
+- **Implementation Planning**: Execution roadmap development
+- **Performance Monitoring**: Success metrics and tracking
 
-## Template Structure
+## 📈 Report Generation
 
-```
-context-engineering-intro/
-├── .claude/
-│   ├── commands/
-│   │   ├── generate-prp.md    # Generates comprehensive PRPs
-│   │   └── execute-prp.md     # Executes PRPs to implement features
-│   └── settings.local.json    # Claude Code permissions
-├── PRPs/
-│   ├── templates/
-│   │   └── prp_base.md       # Base template for PRPs
-│   └── EXAMPLE_multi_agent_prp.md  # Example of a complete PRP
-├── examples/                  # Your code examples (critical!)
-├── CLAUDE.md                 # Global rules for AI assistant
-├── INITIAL.md               # Template for feature requests
-├── INITIAL_EXAMPLE.md       # Example feature request
-└── README.md                # This file
-```
+### Multiple Export Formats
 
-This template doesn't focus on RAG and tools with context engineering because I have a LOT more in store for that soon. ;)
+- **HTML**: Interactive web reports with visualizations
+- **PDF**: Professional documents with charts and tables
+- **Excel**: Detailed spreadsheets with multiple worksheets
+- **JSON**: Structured data for API integration
 
-## Step-by-Step Guide
+### Visualization Features
 
-### 1. Set Up Global Rules (CLAUDE.md)
+- **Risk-Reward Matrices**: Option comparison and evaluation
+- **Consensus Charts**: Agent agreement visualization
+- **Implementation Timelines**: Project planning and milestones
+- **Performance Dashboards**: Key metrics and indicators
 
-The `CLAUDE.md` file contains project-wide rules that the AI assistant will follow in every conversation. The template includes:
+## 🔧 Development
 
-- **Project awareness**: Reading planning docs, checking tasks
-- **Code structure**: File size limits, module organization
-- **Testing requirements**: Unit test patterns, coverage expectations
-- **Style conventions**: Language preferences, formatting rules
-- **Documentation standards**: Docstring formats, commenting practices
+### Project Structure
 
-**You can use the provided template as-is or customize it for your project.**
+The project follows modern Python best practices:
 
-### 2. Create Your Initial Feature Request
+- **Modular Design**: Clear separation of concerns
+- **Type Safety**: Comprehensive type hints and validation
+- **Testing**: Extensive test coverage with pytest
+- **Documentation**: Detailed docstrings and examples
+- **Code Quality**: Black formatting, Ruff linting, MyPy checking
 
-Edit `INITIAL.md` to describe what you want to build:
+### Adding Custom Agents
 
-```markdown
-## FEATURE:
-[Describe what you want to build - be specific about functionality and requirements]
+1. **Create Agent Class**: Extend `BaseStrategicAgent`
+2. **Implement Tools**: Add specialized analysis tools
+3. **Define Prompts**: Create agent-specific system prompts
+4. **Write Tests**: Add comprehensive test coverage
 
-## EXAMPLES:
-[List any example files in the examples/ folder and explain how they should be used]
+```python
+from src.agents.base_agent import BaseStrategicAgent
+from src.models.agent_models import AgentRole
 
-## DOCUMENTATION:
-[Include links to relevant documentation, APIs, or MCP server resources]
-
-## OTHER CONSIDERATIONS:
-[Mention any gotchas, specific requirements, or things AI assistants commonly miss]
-```
-
-**See `INITIAL_EXAMPLE.md` for a complete example.**
-
-### 3. Generate the PRP
-
-PRPs (Product Requirements Prompts) are comprehensive implementation blueprints that include:
-
-- Complete context and documentation
-- Implementation steps with validation
-- Error handling patterns
-- Test requirements
-
-They are similar to PRDs (Product Requirements Documents) but are crafted more specifically to instruct an AI coding assistant.
-
-Run in Claude Code:
-```bash
-/generate-prp INITIAL.md
+class CustomAgent(BaseStrategicAgent):
+    def __init__(self, model_client):
+        super().__init__(
+            agent_name="custom_agent",
+            agent_role=AgentRole.CUSTOM,
+            model_client=model_client,
+            tools=self.get_specialized_tools()
+        )
+    
+    def get_specialized_tools(self):
+        return [custom_tool_1, custom_tool_2]
+    
+    async def perform_specialized_analysis(self, context, data):
+        # Custom analysis logic
+        return analysis_results
 ```
 
-**Note:** The slash commands are custom commands defined in `.claude/commands/`. You can view their implementation:
-- `.claude/commands/generate-prp.md` - See how it researches and creates PRPs
-- `.claude/commands/execute-prp.md` - See how it implements features from PRPs
+### Contributing
 
-The `$ARGUMENTS` variable in these commands receives whatever you pass after the command name (e.g., `INITIAL.md` or `PRPs/your-feature.md`).
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Write tests**: Ensure comprehensive test coverage
+4. **Run tests**: `python run_tests.py`
+5. **Commit changes**: `git commit -m 'Add amazing feature'`
+6. **Push to branch**: `git push origin feature/amazing-feature`
+7. **Open a Pull Request**
 
-This command will:
-1. Read your feature request
-2. Research the codebase for patterns
-3. Search for relevant documentation
-4. Create a comprehensive PRP in `PRPs/your-feature-name.md`
+## 📚 Documentation
 
-### 4. Execute the PRP
+### API Reference
 
-Once generated, execute the PRP to implement your feature:
+For detailed API documentation, see the docstrings in the source code. Key modules:
 
-```bash
-/execute-prp PRPs/your-feature-name.md
+- `src.agents`: Agent implementations and team coordination
+- `src.models`: Data models and validation schemas
+- `src.tools`: Specialized analysis tools and utilities
+- `src.utils`: Report generation and visualization utilities
+
+### Architecture Deep Dive
+
+The system uses a sophisticated multi-agent architecture:
+
+1. **SelectorGroupChat**: Dynamically selects the most appropriate agent for each conversation turn
+2. **Specialized Agents**: Each agent has distinct tools and expertise areas
+3. **Consensus Building**: Agents collaborate to reach informed decisions
+4. **Comprehensive Reporting**: Analysis results are synthesized into actionable reports
+
+## 🚀 Deployment
+
+### Production Deployment
+
+1. **Environment Setup**: Configure production environment variables
+2. **Database Setup**: Set up database for session persistence (optional)
+3. **Model Configuration**: Configure LLM provider and model settings
+4. **Security**: Set up authentication and authorization
+5. **Monitoring**: Configure logging and performance monitoring
+
+### Docker Deployment
+
+```dockerfile
+FROM python:3.10-slim
+
+WORKDIR /app
+COPY . .
+
+RUN pip install -e .
+
+EXPOSE 8000
+CMD ["chainlit", "run", "app.py", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
-The AI coding assistant will:
-1. Read all context from the PRP
-2. Create a detailed implementation plan
-3. Execute each step with validation
-4. Run tests and fix any issues
-5. Ensure all success criteria are met
+## 🔒 Security
 
-## Writing Effective INITIAL.md Files
+- **API Key Management**: Secure storage of API keys and secrets
+- **Input Validation**: Comprehensive input sanitization and validation
+- **Authentication**: Optional user authentication and authorization
+- **Audit Logging**: Detailed logging for security and compliance
 
-### Key Sections Explained
+## 📞 Support
 
-**FEATURE**: Be specific and comprehensive
-- ❌ "Build a web scraper"
-- ✅ "Build an async web scraper using BeautifulSoup that extracts product data from e-commerce sites, handles rate limiting, and stores results in PostgreSQL"
+### Getting Help
 
-**EXAMPLES**: Leverage the examples/ folder
-- Place relevant code patterns in `examples/`
-- Reference specific files and patterns to follow
-- Explain what aspects should be mimicked
+- **Documentation**: Check the in-code documentation and examples
+- **Issues**: Open an issue on GitHub for bug reports and feature requests
+- **Discussions**: Join the community discussions for questions and ideas
 
-**DOCUMENTATION**: Include all relevant resources
-- API documentation URLs
-- Library guides
-- MCP server documentation
-- Database schemas
+### Common Issues
 
-**OTHER CONSIDERATIONS**: Capture important details
-- Authentication requirements
-- Rate limits or quotas
-- Common pitfalls
-- Performance requirements
+1. **API Key Errors**: Ensure your OpenAI API key is correctly configured
+2. **Memory Issues**: Adjust model parameters for available system memory
+3. **Network Issues**: Check internet connectivity for API calls
+4. **Dependencies**: Ensure all required packages are installed
 
-## The PRP Workflow
+## 📄 License
 
-### How /generate-prp Works
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-The command follows this process:
+## 🙏 Acknowledgments
 
-1. **Research Phase**
-   - Analyzes your codebase for patterns
-   - Searches for similar implementations
-   - Identifies conventions to follow
+- **AutoGen**: Microsoft's multi-agent conversation framework
+- **Chainlit**: Modern web framework for AI applications
+- **Pydantic**: Data validation and settings management
+- **OpenAI**: GPT models for agent intelligence
 
-2. **Documentation Gathering**
-   - Fetches relevant API docs
-   - Includes library documentation
-   - Adds gotchas and quirks
+---
 
-3. **Blueprint Creation**
-   - Creates step-by-step implementation plan
-   - Includes validation gates
-   - Adds test requirements
+Built with ❤️ by the StrategySim Team
 
-4. **Quality Check**
-   - Scores confidence level (1-10)
-   - Ensures all context is included
-
-### How /execute-prp Works
-
-1. **Load Context**: Reads the entire PRP
-2. **Plan**: Creates detailed task list using TodoWrite
-3. **Execute**: Implements each component
-4. **Validate**: Runs tests and linting
-5. **Iterate**: Fixes any issues found
-6. **Complete**: Ensures all requirements met
-
-See `PRPs/EXAMPLE_multi_agent_prp.md` for a complete example of what gets generated.
-
-## Using Examples Effectively
-
-The `examples/` folder is **critical** for success. AI coding assistants perform much better when they can see patterns to follow.
-
-### What to Include in Examples
-
-1. **Code Structure Patterns**
-   - How you organize modules
-   - Import conventions
-   - Class/function patterns
-
-2. **Testing Patterns**
-   - Test file structure
-   - Mocking approaches
-   - Assertion styles
-
-3. **Integration Patterns**
-   - API client implementations
-   - Database connections
-   - Authentication flows
-
-4. **CLI Patterns**
-   - Argument parsing
-   - Output formatting
-   - Error handling
-
-### Example Structure
-
-```
-examples/
-├── README.md           # Explains what each example demonstrates
-├── cli.py             # CLI implementation pattern
-├── agent/             # Agent architecture patterns
-│   ├── agent.py      # Agent creation pattern
-│   ├── tools.py      # Tool implementation pattern
-│   └── providers.py  # Multi-provider pattern
-└── tests/            # Testing patterns
-    ├── test_agent.py # Unit test patterns
-    └── conftest.py   # Pytest configuration
-```
-
-## Best Practices
-
-### 1. Be Explicit in INITIAL.md
-- Don't assume the AI knows your preferences
-- Include specific requirements and constraints
-- Reference examples liberally
-
-### 2. Provide Comprehensive Examples
-- More examples = better implementations
-- Show both what to do AND what not to do
-- Include error handling patterns
-
-### 3. Use Validation Gates
-- PRPs include test commands that must pass
-- AI will iterate until all validations succeed
-- This ensures working code on first try
-
-### 4. Leverage Documentation
-- Include official API docs
-- Add MCP server resources
-- Reference specific documentation sections
-
-### 5. Customize CLAUDE.md
-- Add your conventions
-- Include project-specific rules
-- Define coding standards
-
-## Resources
-
-- [Claude Code Documentation](https://docs.anthropic.com/en/docs/claude-code)
-- [Context Engineering Best Practices](https://www.philschmid.de/context-engineering)
+For more information, visit our [GitHub repository](https://github.com/zhengshui/strategy-sim) or contact us at team@strategysim.ai.

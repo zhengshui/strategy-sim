@@ -19,7 +19,8 @@
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:microsoft.github.io)",
       "WebFetch(domain:docs.chainlit.io)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }
