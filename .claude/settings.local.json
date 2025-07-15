@@ -27,7 +27,10 @@
       "Bash(for:*)",
       "Bash(do sed -i 's/@validator/@field_validator/g' \"$file\")",
       "Bash(done)",
-      "Bash(do sed -i 's/from pydantic import BaseModel, Field, validator/from pydantic import BaseModel, Field, field_validator/g' \"$file\")"
+      "Bash(do sed -i 's/from pydantic import BaseModel, Field, validator/from pydantic import BaseModel, Field, field_validator/g' \"$file\")",
+      "Bash(chainlit run:*)",
+      "Bash(pkill:*)",
+      "Bash(timeout:*)"
     ],
     "deny": []
   }

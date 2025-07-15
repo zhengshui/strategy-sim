@@ -111,8 +111,14 @@ settings = Settings()
 
 def get_model_config() -> dict:
     """Get model configuration for AutoGen."""
+    provider_map = {
+        "openai": "autogen_ext.models.openai.OpenAIChatCompletionClient",
+        "azure": "autogen_ext.models.openai.AzureOpenAIChatCompletionClient",
+        "anthropic": "autogen_ext.models.anthropic.AnthropicChatCompletionClient"
+    }
+    
     return {
-        "provider": f"autogen_ext.models.{settings.model_provider}.{settings.model_provider.title()}ChatCompletionClient",
+        "provider": provider_map.get(settings.model_provider, provider_map["openai"]),
         "config": {
             "model": settings.model_name,
             "api_key": settings.openai_api_key,

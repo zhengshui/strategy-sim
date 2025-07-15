@@ -130,9 +130,19 @@ class DecisionAnalysisTeam:
                 model_client=self.model_client,
                 max_turns=self.max_turns,
                 termination_condition=termination_condition,
-                # Agent descriptions for selection logic
-                # Note: This is a simplified version - actual implementation may vary
-                select_speaker_message_template="Select the most appropriate agent to respond based on the conversation context."
+                # Custom selector prompt for strategic decision analysis
+                selector_prompt="""You are coordinating a strategic decision analysis team with the following expert roles:
+{roles}.
+
+Based on the conversation history below, select the most appropriate expert from {participants} to provide the next response. Consider:
+- The topic being discussed
+- Each expert's area of expertise
+- The natural flow of strategic analysis
+- What perspective would be most valuable next
+
+{history}
+
+Select the next expert from {participants} to respond. Only return the role name."""
             )
             
             return selector_group_chat

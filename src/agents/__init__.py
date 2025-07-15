@@ -15,7 +15,7 @@ from .legal_agent import LegalAgent
 from .analyst_agent import AnalystAgent
 from .customer_agent import CustomerAgent
 from .strategist_agent import StrategistAgent
-from .team import DecisionAnalysisTeam, create_decision_team
+from .team import DecisionAnalysisTeam, create_decision_team, run_decision_analysis
 
 __all__ = [
     "BaseStrategicAgent",
@@ -25,5 +25,6 @@ __all__ = [
     "CustomerAgent",
     "StrategistAgent",
     "DecisionAnalysisTeam",
-    "create_decision_team"
+    "create_decision_team",
+    "run_decision_analysis"
 ]
